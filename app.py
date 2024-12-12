@@ -16,9 +16,9 @@ try:
 
     # Ensure the CRS is set to a metric system for area calculations
     if green_areas.crs is None or not green_areas.crs.is_projected:
-        green_areas = green_areas.to_crs(epsg=3857)  # Web Mercator projection (meters)
+        green_areas = green_areas.to_crs(green_areas.crs or "EPSG:4326")  # Preserve original CRS or set default
 
-    green_areas["area_m2"] = green_areas.geometry.area  # Calculate area in square meters
+    green_areas["area_m2"] = green_areas.geometry.to_crs("EPSG:3395").area  # Calculate area in square meters using Mercator projection
     green_areas["area_hectares"] = green_areas["area_m2"] / 10000  # Convert area to hectares
     st.success("GeoJSON file loaded successfully!")
 except Exception as e:
