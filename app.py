@@ -23,10 +23,10 @@ if not green_areas.empty:
     st.subheader("GeoJSON File Properties")
     st.write(green_areas.head())
 
-    # Add a search filter for polygon area
-    st.subheader("Search Green Areas by Size")
-    min_area = st.slider("Minimum Area (hectares):", 0.0, green_areas["area_hectares"].max(), 0.0, 0.1)
-    max_area = st.slider("Maximum Area (hectares):", 0.0, green_areas["area_hectares"].max(), green_areas["area_hectares"].max(), 0.1)
+    # Add a search filter for polygon area in the sidebar
+    st.sidebar.subheader("Search Green Areas by Size")
+    min_area = st.sidebar.slider("Minimum Area (hectares):", 0.0, green_areas["area_hectares"].max(), 5.0, 0.1)
+    max_area = st.sidebar.slider("Maximum Area (hectares):", 0.0, green_areas["area_hectares"].max(), 100.0, 0.1)
 
     filtered_areas = green_areas[(green_areas["area_hectares"] >= min_area) & (green_areas["area_hectares"] <= max_area)]
 
