@@ -2,7 +2,6 @@ import streamlit as st
 import geopandas as gpd
 import folium
 from streamlit_folium import st_folium
-from shapely.geometry import Polygon
 
 # Set up the title of the app
 st.title("Green Area Polygons Viewer")
@@ -13,12 +12,7 @@ geojson_file_path = "./data/Green_Area_Polygons.geojson"
 # Load the GeoJSON file using GeoPandas
 try:
     green_areas = gpd.read_file(geojson_file_path)
-
-    # Ensure the CRS is set to a metric system for area calculations
-    if green_areas.crs is None or not green_areas.crs.is_projected:
-        green_areas = green_areas.to_crs(green_areas.crs or "EPSG:4326")  # Preserve original CRS or set default
-
-    green_areas["area_m2"] = green_areas.geometry.to_crs("EPSG:3395").area  # Calculate area in square meters using Mercator projection
+    green_areas["area_m2"] = green_areas.geometry.area  # Calculate area in square meters
     green_areas["area_hectares"] = green_areas["area_m2"] / 10000  # Convert area to hectares
     st.success("GeoJSON file loaded successfully!")
 except Exception as e:
