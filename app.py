@@ -12,16 +12,23 @@ geojson_file_path = "./data/Green_Area_Polygons.geojson"
 # Load the GeoJSON file using GeoPandas
 try:
     green_areas = gpd.read_file(geojson_file_path)
-    green_areas["area_hectares"] = green_areas.geometry.area / 10000  # Calculate area in hectares
+    green_areas["area_m2"] = green_areas.geometry.area  # Calculate area in square meters
+    green_areas["area_hectares"] = green_areas["area_m2"] / 10000  # Convert area to hectares
     st.success("GeoJSON file loaded successfully!")
-
-    # Debug: Display the range of polygon areas
-    min_area = green_areas["area_hectares"].min()
-    max_area = green_areas["area_hectares"].max()
-    st.write(f"**Debug Info:** Polygon area range is {min_area:.2f} to {max_area:.2f} hectares.")
 except Exception as e:
     st.error(f"Error loading GeoJSON file: {e}")
     st.stop()
+
+# Debug: Display the range of polygon areas
+if not green_areas.empty:
+    min_area_m2 = green_areas["area_m2"].min()
+    max_area_m2 = green_areas["area_m2"].max()
+    min_area_ha = green_areas["area_hectares"].min()
+    max_area_ha = green_areas["area_hectares"].max()
+
+    st.subheader("Debug Information: Area Ranges")
+    st.write(f"Minimum Area: {min_area_m2:.2f} m² ({min_area_ha:.2f} hectares)")
+    st.write(f"Maximum Area: {max_area_m2:.2f} m² ({max_area_ha:.2f} hectares)")
 
 # Display the GeoJSON properties
 if not green_areas.empty:
@@ -30,10 +37,10 @@ if not green_areas.empty:
 
     # Add a search filter for polygon area
     st.subheader("Search Green Areas by Size")
-    min_area_slider = st.slider("Minimum Area (hectares):", 0.0, green_areas["area_hectares"].max(), 0.0, 0.1)
-    max_area_slider = st.slider("Maximum Area (hectares):", 0.0, green_areas["area_hectares"].max(), green_areas["area_hectares"].max(), 0.1)
+    min_area = st.slider("Minimum Area (hectares):", 0.0, green_areas["area_hectares"].max(), 0.0, 0.1)
+    max_area = st.slider("Maximum Area (hectares):", 0.0, green_areas["area_hectares"].max(), green_areas["area_hectares"].max(), 0.1)
 
-    filtered_areas = green_areas[(green_areas["area_hectares"] >= min_area_slider) & (green_areas["area_hectares"] <= max_area_slider)]
+    filtered_areas = green_areas[(green_areas["area_hectares"] >= min_area) & (green_areas["area_hectares"] <= max_area)]
 
     if filtered_areas.empty:
         st.warning("No polygons found within the specified area range.")
